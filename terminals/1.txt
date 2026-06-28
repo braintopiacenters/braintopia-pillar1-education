@@ -1,0 +1,19 @@
+---
+pid: 36408
+cwd: "C:\Grok\Test-Project\braintopia-pillar1-education"
+command: "cd \"C:\\Grok\\Test-Project\\braintopia-pillar1-education\"; npm run dev 2>&1"
+started_at: 2026-06-28T01:08:30.436Z
+running_for_ms: 550007   
+---
+
+> braintopia-pillar1-education@0.1.0 dev
+> next dev
+
+ ⚠ Port 3000 is in use, trying 3001 instead.
+   ▲ Next.js 15.1.4
+   - Local:        http://localhost:3001
+   - Network:      http://192.168.7.166:3001
+   - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 1256ms
