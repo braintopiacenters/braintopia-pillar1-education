@@ -2,39 +2,45 @@
 
 import { useState, useRef } from "react";
 import Link from "next/link";
-import { quizQuestions, calculateScores, getTopClasses, isFlatProfile } from "@/lib/quiz";
-import { getClassBySlug, ClassSlug, ClassData } from "@/lib/classes";
+import {
+  pillar3QuizQuestions,
+  calculatePillar3Scores,
+  getTopPillar3Classes,
+  isFlatPillar3Profile,
+} from "@/lib/pillar3-quiz";
+import {
+  getPillar3ClassBySlug,
+  Pillar3ClassSlug,
+  Pillar3ClassData,
+} from "@/lib/pillar3-classes";
 import { ArrowLeft } from "lucide-react";
 import BookingModal from "@/components/BookingModal";
-import { useSavedClasses } from "@/lib/useSavedClasses";
 
 const ADVANCE_DELAY_MS = 280;
 
-export default function QuizPage() {
+export default function PerformanceProfessionalExcellenceQuizPage() {
   const [current, setCurrent] = useState(0);
   const [answers, setAnswers] = useState<number[]>(() =>
-    Array(quizQuestions.length).fill(-1)
+    Array(pillar3QuizQuestions.length).fill(-1)
   );
   const [showResults, setShowResults] = useState(false);
-  const [resultClass, setResultClass] = useState<ClassData | null>(null);
-  const [affinities, setAffinities] = useState<ClassSlug[]>([]);
+  const [resultClass, setResultClass] = useState<Pillar3ClassData | null>(null);
+  const [affinities, setAffinities] = useState<Pillar3ClassSlug[]>([]);
   const [flatProfile, setFlatProfile] = useState(false);
 
   const advancingRef = useRef(false);
   const answersRef = useRef(answers);
   answersRef.current = answers;
 
-  const { toggleSave, isSaved } = useSavedClasses();
-
   const showResultsFromAnswers = (finalAnswers: number[]) => {
-    const scores = calculateScores(finalAnswers);
-    const { primary, affinities: aff } = getTopClasses(scores);
-    const primaryData = getClassBySlug(primary);
+    const scores = calculatePillar3Scores(finalAnswers);
+    const { primary, affinities: aff } = getTopPillar3Classes(scores);
+    const primaryData = getPillar3ClassBySlug(primary);
 
     if (primaryData) {
       setResultClass(primaryData);
       setAffinities(aff);
-      setFlatProfile(isFlatProfile(finalAnswers, scores));
+      setFlatProfile(isFlatPillar3Profile(finalAnswers, scores));
       setShowResults(true);
     }
   };
@@ -53,7 +59,7 @@ export default function QuizPage() {
     window.setTimeout(() => {
       advancingRef.current = false;
 
-      if (questionIndex < quizQuestions.length - 1) {
+      if (questionIndex < pillar3QuizQuestions.length - 1) {
         setCurrent(questionIndex + 1);
         return;
       }
@@ -69,7 +75,7 @@ export default function QuizPage() {
 
   const restart = () => {
     advancingRef.current = false;
-    const fresh = Array(quizQuestions.length).fill(-1);
+    const fresh = Array(pillar3QuizQuestions.length).fill(-1);
     answersRef.current = fresh;
     setCurrent(0);
     setAnswers(fresh);
@@ -79,9 +85,8 @@ export default function QuizPage() {
     setFlatProfile(false);
   };
 
-  const currentQuestion = quizQuestions[current];
-  const progress = ((current + 1) / quizQuestions.length) * 100;
-  const primarySaved = resultClass ? isSaved(resultClass.slug) : false;
+  const currentQuestion = pillar3QuizQuestions[current];
+  const progress = ((current + 1) / pillar3QuizQuestions.length) * 100;
 
   if (!currentQuestion && !showResults) {
     return null;
@@ -94,7 +99,7 @@ export default function QuizPage() {
           <div className="mb-8">
             <div className="flex justify-between text-sm mb-2 text-brand-dark/60">
               <div>
-                Question {current + 1} of {quizQuestions.length}
+                Question {current + 1} of {pillar3QuizQuestions.length}
               </div>
               <div>{Math.round(progress)}%</div>
             </div>
@@ -112,7 +117,7 @@ export default function QuizPage() {
 
           <div key={current} className="card p-8 md:p-10">
             <div className="text-xs tracking-widest text-brand-blue font-medium mb-3">
-              CLASS DISCOVERY QUIZ
+              PILLAR 3 · CLASS DISCOVERY QUIZ
             </div>
 
             <h2 className="text-2xl md:text-3xl font-semibold tracking-tight mb-8 leading-tight">
@@ -153,6 +158,10 @@ export default function QuizPage() {
             YOUR RESULTS
           </div>
 
+          <div className="inline-block mb-4 px-3 py-1 rounded-full bg-brand-blue/10 text-brand-blue text-xs font-medium">
+            PILLAR 3 · PERFORMANCE &amp; PROFESSIONAL EXCELLENCE
+          </div>
+
           <h1 className="text-4xl md:text-5xl font-semibold tracking-tighter mb-2">
             You most identify with
           </h1>
@@ -162,8 +171,10 @@ export default function QuizPage() {
 
           {flatProfile && (
             <p className="max-w-xl mx-auto text-lg text-brand-dark/80 mb-6 px-4 py-4 rounded-xl bg-brand-blue/5 border border-brand-blue/10">
-              You appear to be managing fairly well across several areas. Many people in your
-              situation still benefit from understanding their brain patterns more deeply.
+              Your responses suggest you may be carrying performance demands across several roles
+              right now — and that&apos;s more common than you might think. Many high performers
+              still benefit from understanding their brain patterns more deeply, or booking a QEEG
+              assessment for a clearer picture.
             </p>
           )}
 
@@ -178,11 +189,11 @@ export default function QuizPage() {
               </div>
               <div className="flex flex-wrap gap-2 justify-center">
                 {affinities.map((slug) => {
-                  const aff = getClassBySlug(slug);
+                  const aff = getPillar3ClassBySlug(slug);
                   return aff ? (
-                    <Link key={slug} href={`/classes/${slug}`} className="result-chip">
+                    <span key={slug} className="result-chip">
                       {aff.name}
-                    </Link>
+                    </span>
                   ) : null;
                 })}
               </div>
@@ -197,22 +208,18 @@ export default function QuizPage() {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center mb-6">
-            <button
-              type="button"
-              onClick={() => toggleSave(resultClass.slug)}
-              className="px-6 py-3 rounded-full border flex items-center justify-center gap-2 hover:bg-white"
-            >
-              {primarySaved ? "Saved ✓" : "Save this class"}
-            </button>
-
             <Link
-              href={`/classes/${resultClass.slug}`}
-              className="px-6 py-3 rounded-full border hover:bg-white"
+              href="/classes#pillar-3"
+              className="px-6 py-3 rounded-full border hover:bg-white inline-flex items-center justify-center"
             >
-              View full class profile
+              Explore Pillar 3 classes
             </Link>
 
-            <BookingModal preselectedClass={resultClass.name} />
+            <BookingModal
+              preselectedClass={resultClass.name}
+              triggerText="Request More Information"
+              triggerClassName="btn-primary px-6 py-3 rounded-full inline-flex items-center justify-center"
+            />
           </div>
 
           <div className="text-sm mb-12">
@@ -220,8 +227,12 @@ export default function QuizPage() {
               Retake the quiz
             </button>
             {" · "}
-            <Link href="/classes" className="text-brand-blue hover:underline">
-              Explore all classes
+            <Link href="/find-your-pillar" className="text-brand-blue hover:underline">
+              Find your pillar
+            </Link>
+            {" · "}
+            <Link href="/explore" className="text-brand-blue hover:underline">
+              Explore all pillars
             </Link>
           </div>
 

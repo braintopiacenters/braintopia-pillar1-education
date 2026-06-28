@@ -1,42 +1,47 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { ClassSlug } from "./classes";
-
-const STORAGE_KEY = "braintopia_saved_classes";
+import { useCallback, useEffect, useState } from "react";
+import {
+  readSavedClassSlugs,
+  removeSavedClassSlug,
+  SAVED_CLASSES_CHANGED_EVENT,
+  toggleSavedClassSlug,
+} from "./saved-classes-storage";
 
 export function useSavedClasses() {
-  const [saved, setSaved] = useState<ClassSlug[]>([]);
+  const [saved, setSaved] = useState<string[]>([]);
+  const [hydrated, setHydrated] = useState(false);
 
-  useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      try {
-        setSaved(JSON.parse(stored));
-      } catch {}
-    }
+  const syncFromStorage = useCallback(() => {
+    setSaved(readSavedClassSlugs());
+    setHydrated(true);
   }, []);
 
-  const isSaved = (slug: ClassSlug) => saved.includes(slug);
+  useEffect(() => {
+    syncFromStorage();
 
-  const toggleSave = (slug: ClassSlug) => {
-    setSaved((prev) => {
-      const next = prev.includes(slug)
-        ? prev.filter((s) => s !== slug)
-        : [...prev, slug];
-      
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-      return next;
-    });
+    const handleChange = () => syncFromStorage();
+
+    window.addEventListener(SAVED_CLASSES_CHANGED_EVENT, handleChange);
+    window.addEventListener("storage", handleChange);
+
+    return () => {
+      window.removeEventListener(SAVED_CLASSES_CHANGED_EVENT, handleChange);
+      window.removeEventListener("storage", handleChange);
+    };
+  }, [syncFromStorage]);
+
+  const isSaved = (slug: string) => saved.includes(slug);
+
+  const toggleSave = (slug: string) => {
+    const next = toggleSavedClassSlug(slug);
+    setSaved(next);
   };
 
-  const remove = (slug: ClassSlug) => {
-    setSaved((prev) => {
-      const next = prev.filter((s) => s !== slug);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-      return next;
-    });
+  const remove = (slug: string) => {
+    const next = removeSavedClassSlug(slug);
+    setSaved(next);
   };
 
-  return { saved, isSaved, toggleSave, remove };
+  return { saved, isSaved, toggleSave, remove, hydrated };
 }

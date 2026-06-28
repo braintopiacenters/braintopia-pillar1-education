@@ -14,7 +14,7 @@ const isResendTestMode = FROM_EMAIL.includes('@resend.dev');
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { name, email, phone, classInterest, message } = body;
+    const { name, email, phone, professionOrRole, pillarInterest, classInterest, message } = body;
 
     if (!name || !email) {
       return NextResponse.json(
@@ -31,18 +31,27 @@ export async function POST(request: Request) {
       );
     }
 
+    const professionHtml = professionOrRole
+      ? `<p><strong>Profession or Role:</strong> ${professionOrRole}</p>`
+      : '';
+    const professionText = professionOrRole
+      ? `Profession or Role: ${professionOrRole}\n`
+      : '';
+
     // 1. Send notification to the Braintopia team
     const { data, error } = await resend.emails.send({
       from: FROM_EMAIL,
       to: [RECIPIENT_EMAIL],
-      subject: `New QEEG Assessment Request from ${name}`,
+      subject: `New Inquiry from Class Finder — ${name}`,
       html: `
         <div style="font-family: system-ui, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #272727;">New QEEG Booking Request</h2>
+          <h2 style="color: #272727;">New Inquiry from Class Finder</h2>
           
           <p><strong>Name:</strong> ${name}</p>
           <p><strong>Email:</strong> <a href="mailto:${email}">${email}</a></p>
           <p><strong>Phone:</strong> ${phone || 'Not provided'}</p>
+          ${professionHtml}
+          <p><strong>Pillar:</strong> ${pillarInterest || 'Not specified'}</p>
           <p><strong>Class Interest:</strong> ${classInterest || 'Not specified'}</p>
           
           <div style="margin-top: 20px;">
@@ -55,16 +64,17 @@ export async function POST(request: Request) {
           <hr style="margin: 24px 0; border: none; border-top: 1px solid #eee;" />
           
           <p style="color: #666; font-size: 12px;">
-            Submitted via Braintopia Pillar 1 Education &amp; Family Support site.
+            Submitted via Braintopia Education &amp; Family Support site.
           </p>
         </div>
       `,
       text: `
-New QEEG Assessment Request
+New Inquiry from Class Finder
 
 Name: ${name}
 Email: ${email}
 Phone: ${phone || 'Not provided'}
+${professionText}Pillar: ${pillarInterest || 'Not specified'}
 Class Interest: ${classInterest || 'Not specified'}
 
 Message:

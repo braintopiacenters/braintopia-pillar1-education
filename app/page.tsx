@@ -27,7 +27,7 @@ export default function Home() {
         </h1>
 
         <Link
-          href="/quiz"
+          href="/find-your-pillar"
           className="btn-accent inline-flex items-center justify-center gap-2.5 max-w-xl mx-auto mb-10 px-6 py-4 rounded-2xl text-base sm:text-[17px] font-semibold shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all ring-2 ring-brand-yellow/40 ring-offset-2 ring-offset-brand-light"
         >
           <Compass className="w-5 h-5 shrink-0" />
@@ -36,7 +36,7 @@ export default function Home() {
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link 
-            href="/quiz" 
+            href="/education-family-support-quiz" 
             className="btn-primary px-8 py-4 rounded-full text-lg inline-flex items-center justify-center gap-2"
           >
             Discover Your Class <ArrowRight className="w-5 h-5" />
@@ -71,7 +71,7 @@ export default function Home() {
               {
                 title: "Thoughtful Discovery",
                 desc: "Take a respectful 7-question quiz that surfaces your primary class and meaningful affinities.",
-                href: "/quiz",
+                href: "/education-family-support-quiz",
               },
               {
                 title: "Clear Next Steps",
@@ -121,7 +121,7 @@ export default function Home() {
       {/* Quick CTA Strip */}
       <div className="max-w-3xl mx-auto px-6 py-16 text-center">
         <div className="text-brand-dark/70 mb-4">Ready to understand how your brain carries the load?</div>
-        <Link href="/quiz" className="btn-accent inline-flex px-8 py-3.5 rounded-full text-lg">
+        <Link href="/education-family-support-quiz" className="btn-accent inline-flex px-8 py-3.5 rounded-full text-lg">
           Take the Class Discovery Quiz
         </Link>
       </div>

@@ -1,20 +1,20 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getAllClasses, getClassBySlug, ClassSlug } from "@/lib/classes";
+import { getAllClassDetailSlugs, getClassDetailBySlug } from "@/lib/class-detail";
 import BookingModal from "@/components/BookingModal";
+import SaveClassButton from "@/components/SaveClassButton";
 
 interface ClassDetailPageProps {
   params: Promise<{ slug: string }>;
 }
 
 export async function generateStaticParams() {
-  const classes = getAllClasses();
-  return classes.map((c) => ({ slug: c.slug }));
+  return getAllClassDetailSlugs().map((slug) => ({ slug }));
 }
 
 export default async function ClassDetailPage({ params }: ClassDetailPageProps) {
   const { slug } = await params;
-  const cls = getClassBySlug(slug as ClassSlug);
+  const cls = getClassDetailBySlug(slug);
 
   if (!cls) {
     notFound();
@@ -30,13 +30,21 @@ export default async function ClassDetailPage({ params }: ClassDetailPageProps) 
 
       <div className="mb-8">
         <div className="inline text-xs tracking-[1.5px] font-medium px-3 py-1 bg-brand-blue/10 text-brand-blue rounded">
-          PILLAR 1 CLASS
+          {cls.pillarBadge}
         </div>
-        <h1 className="text-5xl font-semibold tracking-tighter mt-3">{cls.name}</h1>
+        <div className="flex items-start justify-between gap-4 mt-3">
+          <h1 className="text-5xl font-semibold tracking-tighter">{cls.name}</h1>
+          <SaveClassButton slug={cls.slug} className="mt-2 shrink-0" />
+        </div>
         <p className="mt-4 text-xl text-brand-dark/70">{cls.shortDescription}</p>
       </div>
 
       <div className="space-y-10 mt-10">
+        <section>
+          <h2 className="font-semibold text-xl mb-3">Core Identity</h2>
+          <p className="text-[15px] leading-relaxed text-brand-dark/80">{cls.shortDescription}</p>
+        </section>
+
         <section>
           <h2 className="font-semibold text-xl mb-3">Who This Is For</h2>
           <p className="text-[15px] leading-relaxed text-brand-dark/80">{cls.whoItCovers}</p>
@@ -53,17 +61,29 @@ export default async function ClassDetailPage({ params }: ClassDetailPageProps) 
             <p className="text-[15px] leading-relaxed">{cls.howBraintopiaHelps}</p>
           </div>
         </section>
+
+        {cls.talkingPoints.length > 0 && (
+          <section>
+            <h2 className="font-semibold text-xl mb-3">Talking Points</h2>
+            <ul className="space-y-3">
+              {cls.talkingPoints.map((point) => (
+                <li
+                  key={point}
+                  className="text-[15px] leading-relaxed text-brand-dark/80 pl-4 border-l-2 border-brand-blue/30"
+                >
+                  {point}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
       </div>
 
       <div className="mt-12 flex flex-col sm:flex-row gap-4">
-        <Link 
-          href={`/quiz?class=${cls.slug}`} 
-          className="btn-accent px-8 py-3.5 rounded-full text-center"
-        >
+        <Link href={cls.quizHref} className="btn-accent px-8 py-3.5 rounded-full text-center">
           See if this is your class
         </Link>
 
-        {/* Booking trigger */}
         <BookingModal preselectedClass={cls.name} />
       </div>
 
