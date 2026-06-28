@@ -7,9 +7,14 @@ import { motion, AnimatePresence } from "framer-motion";
 interface BookingModalProps {
   preselectedClass?: string;
   triggerText?: string;
+  triggerClassName?: string;
 }
 
-export default function BookingModal({ preselectedClass, triggerText = "Request more information" }: BookingModalProps) {
+export default function BookingModal({
+  preselectedClass,
+  triggerText = "Request more information",
+  triggerClassName = "btn-primary px-6 py-3 rounded-full inline-flex items-center justify-center",
+}: BookingModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -85,8 +90,9 @@ export default function BookingModal({ preselectedClass, triggerText = "Request 
   return (
     <>
       <button 
+        type="button"
         onClick={open} 
-        className="btn-primary px-6 py-3 rounded-full inline-flex items-center justify-center"
+        className={triggerClassName}
       >
         {triggerText}
       </button>
@@ -106,8 +112,7 @@ export default function BookingModal({ preselectedClass, triggerText = "Request 
                 <>
                   <div className="flex items-center justify-between px-6 py-4 border-b">
                     <div>
-                      <div className="font-semibold text-xl">Schedule Your QEEG</div>
-                      <div className="text-sm text-brand-dark/60">Brain Mapping Assessment</div>
+                      <div className="font-semibold text-xl">Request More Information</div>
                     </div>
                     <button onClick={close} className="text-brand-dark/50 hover:text-brand-dark">
                       <X size={20} />

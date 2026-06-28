@@ -1,4 +1,5 @@
 import Link from "next/link";
+import BookingModal from "@/components/BookingModal";
 
 export default function Footer() {
   return (
@@ -23,7 +24,7 @@ export default function Footer() {
           <div className="space-y-1">
             <div className="font-medium text-brand-dark">Get Started</div>
             <Link href="/quiz" className="block hover:text-brand-blue">Take the Quiz</Link>
-            <a href="#book" className="block hover:text-brand-blue">Request more information</a>
+            <BookingModal triggerClassName="block hover:text-brand-blue text-left" />
           </div>
         </div>
 
