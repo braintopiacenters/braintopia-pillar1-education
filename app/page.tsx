@@ -63,15 +63,57 @@ export default function Home() {
           
           <div className="grid md:grid-cols-3 gap-6 text-left mt-10">
             {[
-              { title: "The 7 Classes", desc: "See which group you most closely identify with — from Guides and Caregivers to Different Thinkers and Supporters." },
-              { title: "Thoughtful Discovery", desc: "Take a respectful 7-question quiz that surfaces your primary class and meaningful affinities." },
-              { title: "Clear Next Steps", desc: "Learn how neurofeedback supports your specific challenges and book a QEEG assessment with ease." },
-            ].map((item, i) => (
-              <div key={i} className="card p-6">
-                <div className="font-semibold text-lg mb-2">{item.title}</div>
-                <p className="text-brand-dark/70 text-[15px]">{item.desc}</p>
-              </div>
-            ))}
+              {
+                title: "The 7 Classes",
+                desc: "See which group you most closely identify with — from Guides and Caregivers to Different Thinkers and Supporters.",
+                href: "/classes",
+              },
+              {
+                title: "Thoughtful Discovery",
+                desc: "Take a respectful 7-question quiz that surfaces your primary class and meaningful affinities.",
+                href: "/quiz",
+              },
+              {
+                title: "Clear Next Steps",
+                desc: "Learn how neurofeedback supports your specific challenges and book a QEEG assessment with ease.",
+                href: "https://www.braintopiacenters.com/contact",
+                external: true,
+              },
+            ].map((item, i) => {
+              const cardClassName =
+                "card p-6 block h-full group cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-blue";
+
+              const content = (
+                <>
+                  <div className="font-semibold text-lg mb-2 group-hover:text-brand-blue transition-colors">
+                    {item.title}
+                  </div>
+                  <p className="text-brand-dark/70 text-[15px] group-hover:text-brand-dark/80 transition-colors">
+                    {item.desc}
+                  </p>
+                </>
+              );
+
+              if (item.external) {
+                return (
+                  <a
+                    key={i}
+                    href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={cardClassName}
+                  >
+                    {content}
+                  </a>
+                );
+              }
+
+              return (
+                <Link key={i} href={item.href} className={cardClassName}>
+                  {content}
+                </Link>
+              );
+            })}
           </div>
         </div>
       </div>
